@@ -13,9 +13,11 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
   final List<GroceryItemModel> _groceryItemModel = [];
 
   void _addItem() {
-    Navigator.of(context).push<GroceryItemModel>(MaterialPageRoute(
-      builder: (context) => const AddNewItem(),
-    ));
+    Navigator.push<GroceryItemModel>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AddNewItem(),
+        ));
   }
 
   @override
