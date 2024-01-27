@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shopping_list_app/Data/categories_Data.dart';
-import 'package:shopping_list_app/Model/grocery_item_model.dart';
 
 import 'Model/category_model.dart';
 
 class AddNewItem extends StatefulWidget {
-  const AddNewItem({Key? key}) : super(key: key);
+  const AddNewItem({super.key});
 
   @override
   State<AddNewItem> createState() => _AddNewItemState();
@@ -24,7 +26,7 @@ class _AddNewItemState extends State<AddNewItem> {
     _selectedCategory = categoriesDataMap[CategoriesEnumList.vegetables];
   }
 
-  void _saveItems() {
+/*  void _saveItems() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       Navigator.of(context).pop(GroceryItemModel(
@@ -33,6 +35,28 @@ class _AddNewItemState extends State<AddNewItem> {
           quantity: _quantity,
           category: _selectedCategory!));
     }
+  }*/
+
+  void _saveItemsInFirebase() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final url = Uri.https("shoppinglistapp-dc941-default-rtdb.firebaseio.com",
+          "shoppingListApp.json");
+      http.post(
+        url,
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: jsonEncode(
+          {
+            'name': _enteredName,
+            'quantity': _quantity,
+            'category': _selectedCategory!.title
+          },
+        ),
+      );
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -139,7 +163,9 @@ class _AddNewItemState extends State<AddNewItem> {
                     child: const Text("Reset"),
                   ),
                   ElevatedButton(
-                    onPressed: _saveItems,
+                    onPressed: () {
+                      _saveItemsInFirebase();
+                    },
                     child: const Text("Submit"),
                   ),
                 ],

@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shopping_list_app/Data/categories_Data.dart';
 import 'package:shopping_list_app/Model/grocery_item_model.dart';
-import 'package:shopping_list_app/add_new_item.dart';
+
+import 'add_new_item.dart';
 
 class GroceryListScreen extends StatefulWidget {
   const GroceryListScreen({super.key});
@@ -21,14 +26,50 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     );
     if (newItems == null) {
       return;
-    } else {
-      setState(() {
-        _groceryItemsScreen.add(newItems);
-      });
+    }
+
+    setState(() {
+      _groceryItemsScreen.add(newItems);
+    });
+
+    final url = Uri.https(
+      "shoppinglistapp-dc941-default-rtdb.firebaseio.com",
+      "shoppingListApp.json",
+    );
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> listData = jsonDecode(response.body);
+
+        for (final item in listData.entries) {
+          final category = categoriesDataMap.entries
+              .firstWhere(
+                (element) => element.value.title == item.value['category'],
+              )
+              .value;
+          setState(() {
+            _groceryItemsScreen.add(GroceryItemModel(
+              id: item.key,
+              name: item.value['name'],
+              quantity: item.value['quantity'],
+              category: category,
+            ));
+          });
+        }
+      } else {
+        // Handle non-200 status code
+        print("Error: ${response.statusCode}");
+        print("Body: ${response.body}");
+      }
+    } catch (error) {
+      // Handle general error
+      print("Error: $error");
     }
   }
 
-  void _deleteitems(GroceryItemModel groceryItemModel) {
+  void _deleteItems(GroceryItemModel groceryItemModel) {
     _groceryItemsScreen.remove(groceryItemModel);
   }
 
@@ -46,7 +87,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
           child: Dismissible(
             key: Key(_groceryItemsScreen[index].id),
             onDismissed: (direction) =>
-                _deleteitems(_groceryItemsScreen[index]),
+                _deleteItems(_groceryItemsScreen[index]),
             child: ListTile(
               title: Text(
                 _groceryItemsScreen[index].name,
