@@ -28,7 +28,7 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     }
   }
 
-  void deleteitems(GroceryItemModel groceryItemModel) {
+  void _deleteitems(GroceryItemModel groceryItemModel) {
     _groceryItemsScreen.remove(groceryItemModel);
   }
 
@@ -45,7 +45,8 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
           color: _groceryItemsScreen[index].category.color,
           child: Dismissible(
             key: Key(_groceryItemsScreen[index].id),
-            onDismissed: (direction) => deleteitems(_groceryItemsScreen[index]),
+            onDismissed: (direction) =>
+                _deleteitems(_groceryItemsScreen[index]),
             child: ListTile(
               title: Text(
                 _groceryItemsScreen[index].name,
