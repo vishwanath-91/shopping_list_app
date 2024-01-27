@@ -28,6 +28,10 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     }
   }
 
+  void deleteitems(GroceryItemModel groceryItemModel) {
+    _groceryItemsScreen.remove(groceryItemModel);
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content = const Center(
@@ -39,19 +43,23 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
         itemCount: _groceryItemsScreen.length,
         itemBuilder: (context, index) => Card(
           color: _groceryItemsScreen[index].category.color,
-          child: ListTile(
-            title: Text(
-              _groceryItemsScreen[index].name,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
+          child: Dismissible(
+            key: Key(_groceryItemsScreen[index].id),
+            onDismissed: (direction) => deleteitems(_groceryItemsScreen[index]),
+            child: ListTile(
+              title: Text(
+                _groceryItemsScreen[index].name,
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            trailing: Text(
-              _groceryItemsScreen[index].quantity.toString(),
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
+              trailing: Text(
+                _groceryItemsScreen[index].quantity.toString(),
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
