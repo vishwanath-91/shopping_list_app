@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list_app/Model/grocery_item.dart';
+import 'package:shopping_list_app/Model/grocery_item_model.dart';
 import 'package:shopping_list_app/add_new_item.dart';
 
 class GroceryListScreen extends StatefulWidget {
@@ -10,14 +10,22 @@ class GroceryListScreen extends StatefulWidget {
 }
 
 class _GroceryListScreenState extends State<GroceryListScreen> {
-  final List<GroceryItemModel> _groceryItemModel = [];
+  final List<GroceryItemModel> _groceryItemsScreen = [];
 
-  void _addItem() {
-    Navigator.push<GroceryItemModel>(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const AddNewItem(),
-        ));
+  Future<void> _addItem() async {
+    final newItems = await Navigator.push<GroceryItemModel>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddNewItem(),
+      ),
+    );
+    if (newItems == null) {
+      return;
+    } else {
+      setState(() {
+        _groceryItemsScreen.add(newItems);
+      });
+    }
   }
 
   @override
@@ -25,6 +33,31 @@ class _GroceryListScreenState extends State<GroceryListScreen> {
     Widget content = const Center(
       child: Text("No items added yet"),
     );
+
+    if (_groceryItemsScreen.isNotEmpty) {
+      content = ListView.builder(
+        itemCount: _groceryItemsScreen.length,
+        itemBuilder: (context, index) => Card(
+          color: _groceryItemsScreen[index].category.color,
+          child: ListTile(
+            title: Text(
+              _groceryItemsScreen[index].name,
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            trailing: Text(
+              _groceryItemsScreen[index].quantity.toString(),
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

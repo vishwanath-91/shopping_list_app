@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list_app/Model/category.dart';
+import 'package:shopping_list_app/Model/category_model.dart';
 
-const categories = {
+const categoriesDataMap = {
   CategoriesEnumList.vegetables: CategoryModel(
     'Vegetables',
     Color.fromARGB(255, 0, 255, 128),
